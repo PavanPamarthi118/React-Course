@@ -1,0 +1,1 @@
+console.log('Thi is a javascript file for React basics');
