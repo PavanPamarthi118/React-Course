@@ -3,6 +3,85 @@
 
 <head>
     <title>Chatbot</title>
+    <style>
+        .body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .send-button {
+            background-color: green;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            margin-left: 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .chat-input {
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            flex-grow: 1;
+        }
+
+        .chat-input-container {
+            margin-bottom: 20px;
+            display: flex;
+            margin-bottom: 60px;
+
+        }
+
+        .app-container {
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message-user {
+            display: flex;
+            align-items: start;
+            justify-content: right;
+
+        }
+
+        .chat-message-robot {
+            display: flex;
+            align-items: start;
+            justify-content: left;
+
+        }
+
+        .chat-message-text {
+            background-color: #e2e1e1;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-right: 10px;
+            margin-left: 10px;
+            margin-bottom: 20px;
+            max-width: 300px;
+
+        }
+
+        .chat-message-profile {
+            width: 45px;
+
+        }
+
+        .chat-messages-container {
+            flex-grow: 1;
+            margin-top: 20px;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -35,7 +114,7 @@
                     },
                 ];
                 setChatMessages(newChatMessages);
-                
+
                 const response = Chatbot.getResponse(inputText);
                 setChatMessages((newChatMessages) => [
                     ...newChatMessages,
@@ -50,36 +129,56 @@
             }
 
             return (
-                <>
+                <div className="chat-input-container">
                     <input
                         placeholder="Send a message to Chatbot"
+                        className="chat-input"
                         size="30"
                         onChange={saveInput}
                         value={inputText}
                     />
-                    <button onClick={sendMessage}>Send</button>
-                </>
+                    <button
+                        onClick={sendMessage}
+                        className="send-button"
+                    >Send</button>
+                </div>
             );
         }
 
         function ChatMessage({ message, sender }) {
 
             return (
-                <div>
+                <div
+                    className={
+                        sender === 'user'
+                            ? "chat-message-user"
+                            : "chat-message-robot"
+                    }>
                     {sender === 'robot' && (
-                        <img src="robot.png" width="50" />
+                        <img src="robot.png" className="chat-message-profile" />
                     )}
-                    {message}
+                    <div className="chat-message-text">{message}</div>
                     {sender === 'user' && (
-                        <img src="user.png" width="50" />
+                        <img src="user.png" className="chat-message-profile" />
                     )}
                 </div>
             );
         }
 
         function ChatMessagesComponent({ chatMessages }) {
+
+            const chatMessagesRef = React.useRef(null);
+            React.useEffect(() => {
+                const containerElem = chatMessagesRef.current;
+                if(containerElem)
+            {
+                containerElem.scrollTop = containerElem.scrollHeight;
+            }
+            }, [chatMessages]);
+
             return (
-                <>
+                <div className="chat-messages-container"
+                    ref={chatMessagesRef}>
                     {chatMessages.map((chatMessage) => {
                         return (
                             <ChatMessage
@@ -89,10 +188,9 @@
                             />
                         );
                     })}
-                </>
+                </div>
             );
         }
-        // State = data that is connected to the HTML , when data changes HTML updates automatically
 
         function AppComponent() {
             const [chatMessages, setChatMessages] = React.useState([
@@ -103,13 +201,13 @@
             ]);
 
             return (
-                <>
+                <div className="app-container">
+                    <ChatMessagesComponent chatMessages={chatMessages} />
                     <ChatInputComponent
                         chatMessages={chatMessages}
                         setChatMessages={setChatMessages}
                     />
-                    <ChatMessagesComponent chatMessages={chatMessages} />
-                </>
+                </div>
             );
         }
 
@@ -121,3 +219,13 @@
 </html>
 
 <!-- Component = a piece of the website  -->
+
+<!-- State = automatically updates the HTML when data changes -->
+
+<!-- Hooks = Let us insert React Features into our components [Every Hook starts with a word "use"] 
+ 
+useState = let's us add state to a functional component.
+useEffect = let's us run some code after the component is created or updated
+useRef = let's automatically save an HTML Element from the component
+
+-->
